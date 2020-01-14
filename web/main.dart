@@ -37,7 +37,7 @@ Future<void> main() async {
     for (var i = result.length - 1; i >= 0; i--) {
       var e = result[i];
       historyList.appendHtml(
-          '<li><small><a href="/#${i + 1}">Dump #${i + 1} <br>Memory: ${e['memory']} <br>Handles: ${e['handles']}</a></small></li>');
+          '<li><small><a href="#${i + 1}">Dump #${i + 1} <br>Memory: ${e['memory']} <br>Handles: ${e['handles']}</a></small></li>');
     }
 
     Future<void> updateTable([_]) async {
@@ -130,7 +130,7 @@ Future<void> addData(String text, DumpResults dump) async {
     'handles': dump.handleCount
   });
   historyList.innerHtml =
-      '<li><small><a href="/#$nextIndex">Dump #$nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
+      '<li><small><a href="#$nextIndex">Dump #$nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
       '${historyList.innerHtml}';
   window.location.href = '#$nextIndex';
   nextIndex += 1;
