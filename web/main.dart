@@ -8,7 +8,7 @@ import 'package:HandleDumpParser/web/snackbar.dart';
 final TableElement dumpTable = querySelector('#dumpTable');
 final UListElement historyList = querySelector('#history');
 final TableSectionElement tBody = dumpTable.tBodies[0];
-int nextIndex = -1;
+int nextIndex = 1;
 Database db;
 
 Future<void> main() async {
@@ -132,6 +132,6 @@ Future<void> addData(String text, DumpResults dump) async {
   historyList.innerHtml =
       '<li><small><a href="/#$nextIndex">Dump #$nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
       '${historyList.innerHtml}';
-  window.location.href = '/#$nextIndex';
+  window.location.href = '#$nextIndex';
   nextIndex += 1;
 }
