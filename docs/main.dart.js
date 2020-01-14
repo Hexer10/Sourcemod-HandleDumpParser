@@ -1567,7 +1567,7 @@ s=b.b
 r=b.c
 u=2
 return P.es((q&&C.e).l(q,P.h8(["data",a,"time",C.d.j(Date.now()),"memory",s,"handles",r],P.i,P.p)),$async$bT)
-case 2:q=$.eN();(q&&C.r).ag(q,'<li><small><a href="/#'+$.aF+'">Dump #'+$.aF+" <br>Memory: "+s+" <br>Handles: "+r+"</a></small></li>"+H.c(q.innerHTML))
+case 2:q=$.eN();(q&&C.r).ag(q,'<li><small><a href="#'+$.aF+'">Dump #'+$.aF+" <br>Memory: "+s+" <br>Handles: "+r+"</a></small></li>"+H.c(q.innerHTML))
 window.location.href="#"+$.aF
 $.aF=$.aF+1
 return P.eu(null,t)}})
@@ -3141,7 +3141,7 @@ $.aF=o.gk(p)+1
 for(u=o.gk(p)-1;u>=0;--u){t=o.h(p,u)
 s=$.eN()
 r=u+1
-q=J.a4(t);(s&&C.r).aE(s,"beforeend",'<li><small><a href="/#'+r+'">Dump #'+r+" <br>Memory: "+H.c(q.h(t,"memory"))+" <br>Handles: "+H.c(q.h(t,"handles"))+"</a></small></li>",null,null)}o=new F.e7()
+q=J.a4(t);(s&&C.r).aE(s,"beforeend",'<li><small><a href="#'+r+'">Dump #'+r+" <br>Memory: "+H.c(q.h(t,"memory"))+" <br>Handles: "+H.c(q.h(t,"handles"))+"</a></small></li>",null,null)}o=new F.e7()
 o.$0()
 s=W.a
 W.a2(window,"hashchange",H.h(o,{func:1,ret:-1,args:[s]}),!1,s)},
