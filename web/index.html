@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title>Handle Dump parser</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+    <!-- Bootstrap CSS -->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+    <link href="https://unpkg.com/node-snackbar@0.1.15/dist/snackbar.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        table {
+            font-size: 0.75em;
+        }
+    </style>
+    <script defer src="main.dart.js"></script>
+</head>
+<body>
+<br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <ul style="margin-top: 70px" id="history">
+            </ul>
+        </div>
+        <div class="col-9">
+            <form id="dumpForm">
+                <div class="form-group needs-validation">
+                    <label for="dumpArea">Paste your dump here making sure to copy the indentation as well or
+                        upload the dump file!.</label>
+                    <textarea class="form-control" id="dumpArea" required rows="4"></textarea>
+                </div>
+                <div class="custom-file">
+                    <input class="custom-file-input" id="files" name="files[]" type="file"/>
+                    <output id="list"></output>
+                    <label class="custom-file-label" for="files">Choose file...</label>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+            <br>
+            <table class="table table-striped" id="dumpTable">
+                <thead>
+                <tr>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Handle count</th>
+                    <th scope="col">Most used handle type</th>
+                    <th scope="col">Memory</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script crossorigin="anonymous"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://unpkg.com/node-snackbar@0.1.15/dist/snackbar.min.js"></script>
+</body>
+</html>

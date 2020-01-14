@@ -1,0 +1,12 @@
+{
+  "name": "Handle Dump Parser",
+  "short_name": "Handle Dump Parser",
+  "description": "Parser for sourcemod handle dumps.",
+  "lang": "en-US",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}
