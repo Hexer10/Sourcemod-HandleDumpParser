@@ -1,3 +1,8 @@
+import 'dart:collection';
+
+import 'package:collection/collection.dart';
+import 'package:quiver/core.dart';
+
 /// Handle Dump Parser.
 class HandleDumpParser {
   HandleDumpParser._();
@@ -63,10 +68,8 @@ class DumpResults {
 
   /// Sort the handles by their memory.
   List<Owner> sort() {
-    var reverse = _owners.map((k, v) => MapEntry(v, k));
-
     var sortedOwners = <Owner>[];
-    reverse.keys.toList()
+    _owners.values.toList()
       ..sort((a, b) => b.memory.compareTo(a.memory))
       ..forEach((owner) {
         sortedOwners.add(owner);
@@ -77,6 +80,14 @@ class DumpResults {
 
   /// A Map containing all the owners names linked to the [Owner] objects.
   Map<String, Owner> get owners => _owners;
+
+  /// Compare two DumpResults
+  factory DumpResults.compare(DumpResults dump1, DumpResults dump2) {
+    var owners1 = dump1.owners;
+    var owners2 = dump2.owners;
+    owners1.forEach((k, v) => v._changed = !owners2.containsValue(v));
+    return DumpResults._(owners1, dump1.totalMemory, dump1.handleCount);
+  }
 }
 
 /// Owner
@@ -93,17 +104,40 @@ class Owner {
   /// Memory used.
   int memory;
 
+  bool _changed = false;
+
+  /// True if the owner was changed.
+  /// See [DumpResults.compare]
+  bool get changed => _changed;
+
   /// Initialize Owner.
   Owner(this.owner, String type, this.memory) {
     types[type] = 1;
   }
 
+  static const _mapEquality = MapEquality();
+
+  @override
+  // ignore: type_annotate_public_apis, avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(other) =>
+      other is Owner &&
+      _mapEquality.equals(types, other.types) &&
+      count == other.count &&
+      memory == other.memory;
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => hash3(types, count, memory);
+
   @override
   String toString() {
-    var reverse = types.map((k, v) => MapEntry(v, k));
-    var sortedKeys = reverse.keys.toList()..sort((a, b) => a > b ? a : b);
-    var type = reverse[sortedKeys[0]].toString().trim();
+    var sortedKeys = types.keys.toList(growable:false)
+      ..sort((k1, k2) => types[k1].compareTo(types[k2]));
+    var sortedMap = LinkedHashMap
+        .fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
+    var type = sortedMap.keys.first;
 
+    print(sortedMap);
     var ownerBuffer = StringBuffer(owner);
     for (var i = owner.length; i < 28; i++) {
       ownerBuffer.write(' ');
