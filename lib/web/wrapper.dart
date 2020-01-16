@@ -4,15 +4,16 @@ library snackbar;
 
 import 'package:js/js.dart';
 
-/// jQuery wrapper
+/// jQuery wrapper.
 @JS('\$')
-external dynamic jQuery(query);
+external dynamic jQuery(Object selector);
 
-
+/// Tooltip wrapper.
 @JS()
 @anonymous
 class TooltipElement {
-  external tooltip();
+  /// Initialize tooltip from [jQuery] element.
+  external Object tooltip();
 }
 
 /// SnackbarParams wrapper.

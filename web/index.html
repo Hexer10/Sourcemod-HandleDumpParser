@@ -53,16 +53,15 @@
                     <label class="custom-file-label" for="files">Choose file...</label>
                 </div>
                 <button class="btn btn-primary" type="submit">Submit</button>
-                <button class="btn btn-secondary" id="compareButton" type="submit">Compare</button>
             </form>
             <br>
             <table class="table table-striped" id="dumpTable">
                 <thead>
                 <tr>
-                    <th scope="col">Owner</th>
-                    <th scope="col">Handle count</th>
-                    <th scope="col">Most used handle type</th>
-                    <th scope="col">Memory</th>
+                    <th id="ownerCol" scope="col">Owner <span id="ownerSort"></span></th>
+                    <th id="handleCol" scope="col">Handle count <span id="handleSort"></span></th>
+                    <th id="typeCol" scope="col">Most used handle type <span id="typeSort"></span></th>
+                    <th id="memoryCol" scope="col">Memory <span id="memorySort">▼</span></th>
                 </tr>
                 </thead>
                 <tbody>

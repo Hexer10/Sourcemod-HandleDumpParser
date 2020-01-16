@@ -1,7 +1,7 @@
-import 'dart:collection';
-
 import 'package:collection/collection.dart';
 import 'package:quiver/core.dart';
+
+import 'sorting.dart';
 
 /// Handle Dump Parser.
 class HandleDumpParser {
@@ -50,7 +50,7 @@ class HandleDumpParser {
             : owners[ownerName].types[type]++;
       }
     }
-    return DumpResults._(owners, totalMemory, handleCount);
+    return DumpResults._(owners, totalMemory, handleCount, file);
   }
 }
 
@@ -64,18 +64,52 @@ class DumpResults {
   /// Total handle count.
   final int handleCount;
 
-  DumpResults._(this._owners, [this.totalMemory, this.handleCount]);
+  /// Raw unparsed dump.
+  final String raw;
 
-  /// Sort the handles by their memory.
-  List<Owner> sort() {
-    var sortedOwners = <Owner>[];
-    _owners.values.toList()
-      ..sort((a, b) => b.memory.compareTo(a.memory))
-      ..forEach((owner) {
-        sortedOwners.add(owner);
-      });
+  DumpResults._(this._owners, this.totalMemory, this.handleCount, this.raw);
 
-    return sortedOwners;
+  /// Sort the handles by [Sorter].
+  List<Owner> sort([Sorter sorter]) {
+    sorter ??= Sorter();
+    var values = _owners.values.toList();
+    if (sorter.order == SortOrder.ascending) {
+      switch (sorter.key) {
+        case SortKey.owner:
+          return values
+            ..sort((a, b) =>
+                a.owner.toLowerCase().compareTo(b.owner.toLowerCase()));
+        case SortKey.handles:
+          return values..sort((a, b) => b.count.compareTo(a.count));
+        case SortKey.type:
+          return values
+            ..sort((a, b) => a
+                .getMostUsedType()
+                .toLowerCase()
+                .compareTo(b.getMostUsedType().toLowerCase()));
+        case SortKey.memory:
+          return values..sort((a, b) => b.memory.compareTo(a.memory));
+      }
+    } else {
+      switch (sorter.key) {
+        case SortKey.owner:
+          return values
+            ..sort((a, b) =>
+                b.owner.toLowerCase().compareTo(a.owner.toLowerCase()));
+        case SortKey.handles:
+          return values..sort((a, b) => a.count.compareTo(b.count));
+        case SortKey.type:
+          return values
+            ..sort((a, b) => b
+                .getMostUsedType()
+                .toLowerCase()
+                .compareTo(a.getMostUsedType().toLowerCase()));
+        case SortKey.memory:
+          return values..sort((a, b) => a.memory.compareTo(b.memory));
+      }
+    }
+    // Fix lint.
+    return null;
   }
 
   /// A Map containing all the owners names linked to the [Owner] objects.
@@ -86,7 +120,8 @@ class DumpResults {
     var owners1 = dump1.owners;
     var owners2 = dump2.owners;
     owners1.forEach((k, v) => v._changed = !owners2.containsValue(v));
-    return DumpResults._(owners1, dump1.totalMemory, dump1.handleCount);
+    return DumpResults._(
+        owners1, dump1.totalMemory, dump1.handleCount, dump1.raw);
   }
 }
 
@@ -121,20 +156,29 @@ class Owner {
   // ignore: type_annotate_public_apis, avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(other) =>
       other is Owner &&
-      _mapEquality.equals(types, other.types) &&
-      count == other.count &&
-      memory == other.memory;
+          _mapEquality.equals(types, other.types) &&
+          count == other.count &&
+          memory == other.memory;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => hash3(types, count, memory);
 
+  /// Returns the most appearing handle type.
+  String getMostUsedType() {
+    var sortedKeys = types.keys.toList(growable: false)
+      ..sort((k1, k2) => types[k2].compareTo(types[k1]));
+    var sortedMap = Map<String, int>.fromIterable(sortedKeys,
+        key: (k) => k, value: (k) => types[k]);
+    return sortedMap.keys.first;
+  }
+
   @override
   String toString() {
-    var sortedKeys = types.keys.toList(growable:false)
+    var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k1].compareTo(types[k2]));
-    var sortedMap = LinkedHashMap
-        .fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
+    var sortedMap =
+    Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
     var type = sortedMap.keys.first;
 
     print(sortedMap);
