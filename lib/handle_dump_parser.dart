@@ -187,10 +187,9 @@ class Owner {
     var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k1].compareTo(types[k2]));
     var sortedMap =
-    Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
+        Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
     var type = sortedMap.keys.first;
 
-    print(sortedMap);
     var ownerBuffer = StringBuffer(owner);
     for (var i = owner.length; i < 28; i++) {
       ownerBuffer.write(' ');

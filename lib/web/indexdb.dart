@@ -150,8 +150,6 @@ String _getTooltip(Owner owner) {
   var sortedMap =
       Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
 
-  print('- POL -' + owner.types.toString());
-  print('- PIL -' + owner.ownerMemory.toString());
   sortedMap.forEach((k, v) {
     buffer.write('$k - $v (${owner.ownerMemory[k]})<br>');
   });

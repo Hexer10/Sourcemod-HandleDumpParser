@@ -2,6 +2,7 @@ include: package:effective_dart/analysis_options.yaml
 
 linter:
   rules:
+    - avoid_print
     #Unecessary
     - unnecessary_statements
     - unnecessary_new
