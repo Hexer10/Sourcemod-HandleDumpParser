@@ -58,7 +58,7 @@ Future<void> updateTable([_]) async {
 
   var transaction = _database.transaction('dumps', 'readonly');
   var store = transaction.objectStore('dumps');
-  var result = await store.getObject(id);
+  Map<String, dynamic> result = await store.getObject(id);
   var dumpResults = HandleDumpParser.parse(result['data']);
 
   if (dumpResults == null) {
@@ -103,12 +103,14 @@ void sortTable(Sorter sorter) {
     var types = result.types;
     var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k2].compareTo(types[k1]));
-    var sortedMap =
-        Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
+    var sortedMap = Map<String, int>.fromIterable(sortedKeys,
+        key: (k) => k, value: (k) => types[k]);
     var type = sortedMap.keys.first;
 
     tableBody.appendHtml(
-        '<tr class="col-sm-12"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">$type</span></th><th>${result.memory}</th></tr>',
+        '<tr class="col-sm-12"><th>${result.owner}</th><th>${result
+            .count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(
+            result)}">$type</span></th><th>${result.memory}</th></tr>',
         validator: htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
@@ -159,8 +161,8 @@ String _getTooltip(Owner owner) {
   var types = owner.types;
   var sortedKeys = types.keys.toList(growable: false)
     ..sort((k1, k2) => types[k2].compareTo(types[k1]));
-  var sortedMap =
-      Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
+  var sortedMap = Map<String, int>.fromIterable(sortedKeys,
+      key: (k) => k, value: (k) => types[k]);
 
   sortedMap.forEach((k, v) {
     buffer.write('$k - $v (${owner.ownerMemory[k]})<br>');

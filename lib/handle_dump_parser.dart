@@ -159,11 +159,11 @@ class Owner {
     ownerMemory[type] = memory;
   }
 
-  static const _mapEquality = MapEquality();
+  static const _mapEquality = MapEquality<String, int>();
 
   @override
   // ignore: type_annotate_public_apis, avoid_equals_and_hash_code_on_mutable_classes
-  bool operator ==(other) =>
+  bool operator ==(Object other) =>
       other is Owner &&
       _mapEquality.equals(types, other.types) &&
       count == other.count &&
@@ -186,8 +186,8 @@ class Owner {
   String toString() {
     var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k1].compareTo(types[k2]));
-    var sortedMap =
-        Map.fromIterable(sortedKeys, key: (k) => k, value: (k) => types[k]);
+    var sortedMap = Map<String, int>.fromIterable(sortedKeys,
+        key: (k) => k, value: (k) => types[k]);
     var type = sortedMap.keys.first;
 
     var ownerBuffer = StringBuffer(owner);
