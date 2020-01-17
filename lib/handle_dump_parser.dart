@@ -26,7 +26,7 @@ class HandleDumpParser {
 
       final ownerName = line.substring(11, 32).trim();
 
-      final type = line.substring(32, 53);
+      final type = line.substring(32, 53).trim();
 
       var memory = int.parse(line.substring(53).trim());
       if (memory <= 0) {
@@ -45,9 +45,13 @@ class HandleDumpParser {
           ..memory += memory
           ..count += 1;
 
-        owners[ownerName].types[type] == null
-            ? owners[ownerName].types[type] = 1
-            : owners[ownerName].types[type]++;
+        owners[ownerName]
+            .types
+            .update(type, (value) => value + 1, ifAbsent: () => 1);
+
+        owners[ownerName]
+            .ownerMemory
+            .update(type, (value) => value + memory, ifAbsent: () => memory);
       }
     }
     return DumpResults._(owners, totalMemory, handleCount, file);
@@ -133,10 +137,14 @@ class Owner {
   /// Map containing all the handles names and their count.
   Map<String, int> types = <String, int>{};
 
+  /// Map containing all the handles names and their memory used.
+  /// The keys have the same order and have the same names as [types].
+  Map<String, int> ownerMemory = <String, int>{};
+
   /// The total handle count.
   int count = 1;
 
-  /// Memory used.
+  /// Total memory used.
   int memory;
 
   bool _changed = false;
@@ -148,6 +156,7 @@ class Owner {
   /// Initialize Owner.
   Owner(this.owner, String type, this.memory) {
     types[type] = 1;
+    ownerMemory[type] = memory;
   }
 
   static const _mapEquality = MapEquality();
@@ -156,9 +165,9 @@ class Owner {
   // ignore: type_annotate_public_apis, avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(other) =>
       other is Owner &&
-          _mapEquality.equals(types, other.types) &&
-          count == other.count &&
-          memory == other.memory;
+      _mapEquality.equals(types, other.types) &&
+      count == other.count &&
+      memory == other.memory;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
