@@ -118,7 +118,11 @@ void sortTable(Sorter sorter) {
 void createHistory(Request request) {
   List<dynamic> result = request.result;
   _nextIndex = result.length + 1;
-  for (var i = result.length - 1; i >= 0; i--) {
+  var min = result.length - 10;
+  if (min < 0) {
+    min = 0;
+  }
+  for (var i = result.length - 1; i >= min; i--) {
     var e = result[i];
     historyList.appendHtml(
         '<li><small><a href="#${i + 1}">Dump #${i + 1} <br>Memory: ${e['memory']} <br>Handles: ${e['handles']}</a></small></li>');
@@ -130,12 +134,20 @@ Future<void> addData(DumpResults dump) async {
   var transaction = _database.transaction('dumps', 'readwrite');
   await transaction.objectStore('dumps').add({
     'data': dump.raw,
-    'time': DateTime.now().millisecondsSinceEpoch.toString(),
+    'time': DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString(),
     'memory': dump.totalMemory,
     'handles': dump.handleCount
   });
+  var children = historyList.children;
+  if (children.length >= 10) {
+    children.removeLast();
+  }
   historyList.innerHtml =
-      '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
+  '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump
+      .totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
       '${historyList.innerHtml}';
   window.location.href = '#$_nextIndex';
   _nextIndex += 1;
