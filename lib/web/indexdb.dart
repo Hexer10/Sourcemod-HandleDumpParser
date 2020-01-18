@@ -44,6 +44,8 @@ void _createObjectStore(Database database) {
   store.createIndex('handles', 'handles', unique: false);
 }
 
+final _compareRegex = RegExp(r'^(\d*)-(\d*)$');
+
 /// Update the table
 Future<void> updateTable([_]) async {
   // Validate the hash.
@@ -51,20 +53,54 @@ Future<void> updateTable([_]) async {
   if (hash.trim().isEmpty) {
     return;
   }
-  var id = int.tryParse(window.location.hash.substring(1));
-  if (id == null || id < 0 || id > _nextIndex - 1) {
+  hash = window.location.hash.substring(1);
+  var id = int.tryParse(hash);
+  int compareId;
+  if (id == null) {
+    var match = _compareRegex.firstMatch(hash);
+    if (match == null) {
+      return;
+    }
+    id = int.tryParse(match.group(1));
+    compareId = int.tryParse(match.group(2));
+    if (id == null ||
+        compareId == null ||
+        compareId < 0 ||
+        compareId > _nextIndex - 1) {
+      return;
+    }
+  }
+
+  if (id < 0 || id > _nextIndex - 1) {
     return;
   }
 
   var transaction = _database.transaction('dumps', 'readonly');
   var store = transaction.objectStore('dumps');
-  Map<String, dynamic> result = await store.getObject(id);
+  var result = await store.getObject(id);
   var dumpResults = HandleDumpParser.parse(result['data']);
 
   if (dumpResults == null) {
     Snackbar.show(SnackbarParams(
         text: 'Invalid string!', pos: 'top-right', backgroundColor: '#cc3300'));
     return;
+  }
+
+  if (compareId != null) {
+    transaction = _database.transaction('dumps', 'readonly');
+    store = transaction.objectStore('dumps');
+    result = await store.getObject(compareId);
+    var dumpResults2 = HandleDumpParser.parse(result['data']);
+
+    if (dumpResults2 == null) {
+      Snackbar.show(SnackbarParams(
+          text: 'Invalid string!',
+          pos: 'top-right',
+          backgroundColor: '#cc3300'));
+      return;
+    }
+
+    dumpResults = DumpResults.compare(dumpResults, dumpResults2);
   }
 
   _oldResult = dumpResults;
@@ -81,7 +117,12 @@ Future<void> updateTable([_]) async {
   tableBody.innerHtml = '';
   for (var result in results) {
     tableBody.appendHtml(
-        '<tr class="col-sm-12"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory}</th></tr>',
+        '<tr class="col-sm-12${result.changed
+            ? ' table-danger'
+            : ''}"><th>${result.owner}</th><th>${result
+            .count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(
+            result)}">${result.getMostUsedType()}</span></th><th>${result
+            .memory}</th></tr>',
         validator: htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
