@@ -117,12 +117,7 @@ Future<void> updateTable([_]) async {
   tableBody.innerHtml = '';
   for (var result in results) {
     tableBody.appendHtml(
-        '<tr class="col-sm-12${result.changed
-            ? ' table-danger'
-            : ''}"><th>${result.owner}</th><th>${result
-            .count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(
-            result)}">${result.getMostUsedType()}</span></th><th>${result
-            .memory}</th></tr>',
+        '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory}</th></tr>',
         validator: htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
@@ -149,9 +144,7 @@ void sortTable(Sorter sorter) {
     var type = sortedMap.keys.first;
 
     tableBody.appendHtml(
-        '<tr class="col-sm-12"><th>${result.owner}</th><th>${result
-            .count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(
-            result)}">$type</span></th><th>${result.memory}</th></tr>',
+        '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">$type</span></th><th>${result.memory}</th></tr>',
         validator: htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
@@ -177,10 +170,7 @@ Future<void> addData(DumpResults dump) async {
   var transaction = _database.transaction('dumps', 'readwrite');
   await transaction.objectStore('dumps').add({
     'data': dump.raw,
-    'time': DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString(),
+    'time': DateTime.now().millisecondsSinceEpoch.toString(),
     'memory': dump.totalMemory,
     'handles': dump.handleCount
   });
@@ -189,8 +179,7 @@ Future<void> addData(DumpResults dump) async {
     children.removeLast();
   }
   historyList.innerHtml =
-  '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump
-      .totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
+      '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
       '${historyList.innerHtml}';
   window.location.href = '#$_nextIndex';
   _nextIndex += 1;
