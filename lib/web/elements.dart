@@ -1,5 +1,7 @@
 import 'dart:html';
 
+import '../handle_dump_parser.dart';
+
 final TableElement _dumpTable = querySelector('#dumpTable');
 final TableSectionElement _tableBody = _dumpTable.tBodies.first;
 final UListElement _historyList = querySelector('#history');
@@ -9,6 +11,9 @@ final TableCellElement _handleCol = querySelector('#handleCol');
 final TableCellElement _typeCol = querySelector('#typeCol');
 final TableCellElement _memoryCol = querySelector('#memoryCol');
 final List<SpanElement> _spanSort = querySelectorAll('[id\$=\'Sort\']');
+
+/// The latest displayed result.
+DumpResults oldResult;
 
 /// History list element.
 UListElement get historyList => _historyList;

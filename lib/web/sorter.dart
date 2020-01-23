@@ -26,6 +26,10 @@ void resetSort() {
 }
 
 void _handleEvent(MouseEvent event) {
+  if (oldResult == null) {
+    return;
+  }
+
   TableCellElement target = event.currentTarget;
   var newKey = _stringToKey(target.id);
   assert(newKey != null);

@@ -9,7 +9,6 @@ import 'wrapper.dart';
 
 Database _database;
 int _nextIndex = 1;
-DumpResults _oldResult;
 
 /// Initialize db.
 Future<void> initDB() async {
@@ -103,7 +102,7 @@ Future<void> updateTable([_]) async {
     dumpResults = DumpResults.compare(dumpResults, dumpResults2);
   }
 
-  _oldResult = dumpResults;
+  oldResult = dumpResults;
   final htmlValidator = NodeValidatorBuilder.common()
     ..allowElement('span', attributes: [
       'data-toggle',
@@ -133,7 +132,7 @@ void sortTable(Sorter sorter) {
       'data-container'
     ]);
 
-  var results = _oldResult.sort(sorter);
+  var results = oldResult.sort(sorter);
   tableBody.innerHtml = '';
   for (var result in results) {
     var types = result.types;
