@@ -117,7 +117,7 @@ Future<void> updateTable([_]) async {
   tableBody.innerHtml = '';
   for (var result in results) {
     tableBody.appendHtml(
-        '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory}</th></tr>',
+        '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory} bytes</th></tr>',
         validator: htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
@@ -195,7 +195,7 @@ String _getTooltip(Owner owner) {
       key: (k) => k, value: (k) => types[k]);
 
   sortedMap.forEach((k, v) {
-    buffer.write('$k - $v (${owner.ownerMemory[k]})<br>');
+    buffer.write('$k - $v (${owner.ownerMemory[k]} bytes)<br>');
   });
   buffer.write('</small>');
   return buffer.toString();
