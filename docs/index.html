@@ -44,7 +44,7 @@
             <form id="dumpForm">
                 <div class="form-group needs-validation">
                     <label for="dumpArea">Paste your dump here making sure to copy the indentation as well or
-                        upload the dump file!.</label>
+                        upload the dump file!</label>
                     <textarea class="form-control" id="dumpArea" required rows="4"></textarea>
                 </div>
                 <div class="custom-file">
@@ -53,6 +53,7 @@
                     <label class="custom-file-label" for="files">Choose file...</label>
                 </div>
                 <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-primary" type="button" id="csvButton">Convert To CSV</button>
             </form>
             <br>
             <table class="table table-striped" id="dumpTable">

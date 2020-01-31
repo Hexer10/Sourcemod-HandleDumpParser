@@ -120,6 +120,7 @@ Future<void> updateTable([_]) async {
         validator: htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
+
 }
 
 /// Sort a table from a previous dumpResult.

@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:csv/csv.dart';
 import 'package:quiver/core.dart';
 
 import 'sorting.dart';
@@ -126,6 +127,18 @@ class DumpResults {
     owners1.forEach((k, v) => v._changed = !owners2.containsValue(v));
     return DumpResults._(
         owners1, dump1.totalMemory, dump1.handleCount, dump1.raw);
+  }
+
+  /// Convert this object to a csv format string.
+  String toCsv() {
+    var csv = <List<dynamic>>[
+      const ['Owner', 'HandleCount', 'MostUsedHandle', 'Memory']
+    ];
+
+    owners.forEach((k, v) {
+      csv.add([v.owner, v.count, v.getMostUsedType(), v.memory]);
+    });
+    return ListToCsvConverter().convert(csv);
   }
 }
 
