@@ -7,7 +7,7 @@ import 'sorting.dart';
 class HandleDumpParser {
   HandleDumpParser._();
 
-  /// Parse an Handle Dump.
+  /// Parse a Handle Dump.
   static DumpResults parse(String file) {
     var count = 0;
     var owners = <String, Owner>{};
@@ -137,7 +137,7 @@ class Owner {
   /// Map containing all the handles names and their count.
   Map<String, int> types = <String, int>{};
 
-  /// Map containing all the handles names and their memory used.
+  /// Map containing all the handles names the memory used.
   /// The keys have the same order and have the same names as [types].
   Map<String, int> ownerMemory = <String, int>{};
 
@@ -149,7 +149,7 @@ class Owner {
 
   bool _changed = false;
 
-  /// True if the owner was changed.
+  /// Returns true if the results are changed.
   /// See [DumpResults.compare]
   bool get changed => _changed;
 

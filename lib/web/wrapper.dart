@@ -12,7 +12,7 @@ external dynamic jQuery(Object selector);
 @JS()
 @anonymous
 class TooltipElement {
-  /// Initialize tooltip from [jQuery] element.
+  /// Initialize the tooltip from [jQuery] element.
   external Object tooltip();
 }
 
