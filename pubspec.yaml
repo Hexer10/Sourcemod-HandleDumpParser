@@ -1,8 +1,7 @@
 name: HandleDumpParser
-description: A sample command-line application.
-# version: 1.0.0
-# homepage: https://www.example.com
-# author: Mattia <email@example.com>
+description: Tool to parse sourcemod handle dumps
+homepage: https://hexer10.github.io/Sourcemod-HandleDumpParser/
+author: Mattia <hexer504@gmail.com>
 
 environment:
   sdk: '>=2.7.0 <3.0.0'

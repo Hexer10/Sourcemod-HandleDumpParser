@@ -4,8 +4,11 @@ import '../handle_dump_parser.dart';
 
 final TableElement _dumpTable = querySelector('#dumpTable');
 final TableSectionElement _tableBody = _dumpTable.tBodies.first;
+final FormElement _dumpForm = querySelector('#dumpForm');
+final InputElement _fileInput = querySelector('#files');
 final UListElement _historyList = querySelector('#history');
 final ButtonElement _csvButton = querySelector('#csvButton');
+final ButtonElement _clearButton = querySelector('#clearButton');
 
 final TableCellElement _ownerCol = querySelector('#ownerCol');
 final TableCellElement _handleCol = querySelector('#handleCol');
@@ -22,11 +25,20 @@ TableElement get dumpTable => _dumpTable;
 /// Table body(tr) element.
 TableSectionElement get tableBody => _tableBody;
 
+/// The input form element.
+FormElement get dumpForm => _dumpForm;
+
+/// The input file element.
+InputElement get fileInput => _fileInput;
+
 /// History list element.
 UListElement get historyList => _historyList;
 
 /// Convert to CSV button element.
 ButtonElement get csvButton => _csvButton;
+
+/// Clear history button element.
+ButtonElement get clearButton => _clearButton;
 
 /// Owner body column.
 TableCellElement get ownerCol => _ownerCol;

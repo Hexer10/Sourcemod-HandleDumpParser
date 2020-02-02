@@ -9,8 +9,8 @@ import 'package:HandleDumpParser/web/wrapper.dart';
 Future<void> main() async {
   await initDB();
   initSort();
-  querySelector('#dumpForm').onSubmit.listen(onFormSubmit);
-  document.querySelector('#files').onChange.listen(onFileSubmit);
+  dumpForm.onSubmit.listen(onFormSubmit);
+  fileInput.onChange.listen(onFileSubmit);
   csvButton.onClick.listen((data) {
     if (oldResult == null) {
       Snackbar.show(SnackbarParams(
@@ -35,6 +35,9 @@ Future<void> main() async {
           backgroundColor: '#cc3300'));
       print(result);
     }
+  });
+  clearButton.onClick.listen((data) {
+    clearHistory();
   });
 }
 

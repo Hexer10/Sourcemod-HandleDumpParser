@@ -9,6 +9,13 @@ import 'wrapper.dart';
 
 Database _database;
 int _nextIndex = 1;
+final _htmlValidator = NodeValidatorBuilder.common()
+  ..allowElement('span', attributes: [
+    'data-toggle',
+    'data-html',
+    'data-placement',
+    'data-container'
+  ]);
 
 /// Initialize db.
 Future<void> initDB() async {
@@ -58,6 +65,7 @@ Future<void> updateTable([_]) async {
   if (id == null) {
     var match = _compareRegex.firstMatch(hash);
     if (match == null) {
+      window.location.hash = '#';
       return;
     }
     id = int.tryParse(match.group(1));
@@ -66,11 +74,13 @@ Future<void> updateTable([_]) async {
         compareId == null ||
         compareId < 0 ||
         compareId > _nextIndex - 1) {
+      window.location.hash = '#';
       return;
     }
   }
 
   if (id < 0 || id > _nextIndex - 1) {
+    window.location.hash = '#';
     return;
   }
 
@@ -103,24 +113,15 @@ Future<void> updateTable([_]) async {
   }
 
   oldResult = dumpResults;
-  final htmlValidator = NodeValidatorBuilder.common()
-    ..allowElement('span', attributes: [
-      'data-toggle',
-      'data-html',
-      'data-placement',
-      'data-container'
-    ]);
-
   var results = dumpResults.sort();
   resetSort();
   tableBody.innerHtml = '';
   for (var result in results) {
     tableBody.appendHtml(
         '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory} bytes</th></tr>',
-        validator: htmlValidator);
+        validator: _htmlValidator);
   }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
-
 }
 
 /// Sort a table from a previous dumpResult.
@@ -178,11 +179,22 @@ Future<void> addData(DumpResults dump) async {
   if (children.length >= 10) {
     children.removeLast();
   }
-  historyList.innerHtml =
-      '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'
-      '${historyList.innerHtml}';
-  window.location.href = '#$_nextIndex';
+  children.insert(
+      0,
+      Element.html(
+          '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'));
+  window.location.hash = '#$_nextIndex';
   _nextIndex += 1;
+}
+
+/// Clears all the history data.
+Future<void> clearHistory() async {
+  var transaction = _database.transaction('dumps', 'readwrite');
+  await transaction.objectStore('dumps').clear();
+  historyList.children.clear();
+  tableBody.innerHtml = '';
+  window.location.hash = '#';
+  _nextIndex = 1;
 }
 
 /// Returns the owners' tooltip string.

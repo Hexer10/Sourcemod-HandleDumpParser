@@ -4,6 +4,11 @@ import 'package:quiver/core.dart';
 
 import 'sorting.dart';
 
+const _csvHead = ['Owner', 'HandleCount', 'MostUsedHandle', 'Memory'];
+
+const _listEquality = ListEquality<String>();
+const _mapEquality = MapEquality<String, int>();
+
 /// Handle Dump Parser.
 class HandleDumpParser {
   HandleDumpParser._();
@@ -18,7 +23,7 @@ class HandleDumpParser {
     var lines = file.trim().split('\n');
     for (var line in lines) {
       if (line.length < 53) {
-        return null;
+        return _tryCSV(file);
       }
 
       if (++count < 2 || line.startsWith('-')) {
@@ -29,12 +34,14 @@ class HandleDumpParser {
 
       final type = line.substring(32, 53).trim();
 
-      var memory = int.parse(line.substring(53).trim());
+      var memory = int.tryParse(line.substring(53).trim());
+      if (memory == null) {
+        return null;
+      }
       if (memory <= 0) {
         memory = 0;
-      } else {
-        handleCount++;
       }
+      handleCount++;
 
       totalMemory += memory;
 
@@ -56,6 +63,33 @@ class HandleDumpParser {
       }
     }
     return DumpResults._(owners, totalMemory, handleCount, file);
+  }
+
+  static DumpResults _tryCSV(String file) {
+    var list = CsvToListConverter(eol: '\n').convert(file);
+    var head = list.first;
+    if (!_listEquality.equals(_csvHead, head)) {
+      return null;
+    }
+    var totalMemory = 0;
+    var totalHandles = 0;
+    var owners = <Owner>[];
+    for (var row in list.skip(1)) {
+      var count = row[1];
+      var memory = row[3];
+      if (count is! int || memory is! int) {
+        return null;
+      }
+      totalMemory += memory;
+      totalHandles += count;
+      owners.add(Owner(row[0], row[2], memory)..count = count);
+    }
+    return DumpResults._(
+        Map<String, Owner>.fromIterable(owners,
+            key: (k) => k.owner, value: (v) => v),
+        totalMemory,
+        totalHandles,
+        file);
   }
 }
 
@@ -131,9 +165,7 @@ class DumpResults {
 
   /// Convert this object to a csv format string.
   String toCsv() {
-    var csv = <List<dynamic>>[
-      const ['Owner', 'HandleCount', 'MostUsedHandle', 'Memory']
-    ];
+    var csv = <List<dynamic>>[_csvHead];
 
     owners.forEach((k, v) {
       csv.add([v.owner, v.count, v.getMostUsedType(), v.memory]);
@@ -171,8 +203,6 @@ class Owner {
     types[type] = 1;
     ownerMemory[type] = memory;
   }
-
-  static const _mapEquality = MapEquality<String, int>();
 
   @override
   // ignore: type_annotate_public_apis, avoid_equals_and_hash_code_on_mutable_classes
