@@ -6,7 +6,7 @@ import 'sorting.dart';
 
 const _csvHead = ['Owner', 'HandleCount', 'MostUsedHandle', 'Memory'];
 
-const _listEquality = ListEquality<String>();
+const _listEquality = ListEquality();
 const _mapEquality = MapEquality<String, int>();
 
 /// Handle Dump Parser.
