@@ -14,8 +14,7 @@ Future<void> main() async {
   csvButton.onClick.listen((data) {
     if (oldResult == null) {
       Snackbar.show(SnackbarParams(
-          text:
-          'No dump is selected.',
+          text: 'No dump is selected.',
           pos: 'top-right',
           backgroundColor: '#cc3300'));
       return;
@@ -43,7 +42,7 @@ Future<void> main() async {
 
 void onFormSubmit(Event event) {
   event.preventDefault();
-  TextAreaElement dumpArea = querySelector('#dumpArea');
+  var dumpArea = querySelector('#dumpArea') as TextAreaElement;
   var dump = dumpArea.value;
 
   var dumpResults = HandleDumpParser.parse(dump);
@@ -67,7 +66,7 @@ void onFileSubmit(_) {
   var reader = FileReader();
 
   reader.onLoad.listen((fileEvent) {
-    String dump = reader.result;
+    var dump = reader.result as String;
     var dumpResults = HandleDumpParser.parse(dump);
 
     if (dumpResults == null) {
@@ -80,7 +79,7 @@ void onFileSubmit(_) {
     addData(dumpResults);
   });
 
-  reader.readAsText(fileInput[0], 'UTF-8');
+  reader.readAsText(fileInput[0] as Blob, 'UTF-8');
 }
 
 /*

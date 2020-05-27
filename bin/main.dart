@@ -10,9 +10,9 @@ void main(List<String> arguments) {
 
   final argResults = parser.parse(arguments);
 
-  String path = argResults['path'];
+  var path = argResults['path'] as String;
 
-  if (argResults['help']) {
+  if (argResults['help'] as bool) {
     print(parser.usage);
   } else if (path == null) {
     handleError('Missing required argument: path');

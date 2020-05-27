@@ -2,19 +2,20 @@ import 'dart:html';
 
 import '../handle_dump_parser.dart';
 
-final TableElement _dumpTable = querySelector('#dumpTable');
-final TableSectionElement _tableBody = _dumpTable.tBodies.first;
-final FormElement _dumpForm = querySelector('#dumpForm');
-final InputElement _fileInput = querySelector('#files');
-final UListElement _historyList = querySelector('#history');
-final ButtonElement _csvButton = querySelector('#csvButton');
-final ButtonElement _clearButton = querySelector('#clearButton');
+final _dumpTable = querySelector('#dumpTable') as TableElement;
+final _tableBody = _dumpTable.tBodies.first;
+final _dumpForm = querySelector('#dumpForm') as FormElement;
+final _fileInput = querySelector('#files') as InputElement;
+final _historyList = querySelector('#history') as UListElement;
+final _csvButton = querySelector('#csvButton') as ButtonElement;
+final _clearButton = querySelector('#clearButton') as ButtonElement;
 
-final TableCellElement _ownerCol = querySelector('#ownerCol');
-final TableCellElement _handleCol = querySelector('#handleCol');
-final TableCellElement _typeCol = querySelector('#typeCol');
-final TableCellElement _memoryCol = querySelector('#memoryCol');
-final List<SpanElement> _spanSort = querySelectorAll('[id\$=\'Sort\']');
+final _ownerCol = querySelector('#ownerCol') as TableCellElement;
+
+final _handleCol = querySelector('#handleCol') as TableCellElement;
+final _typeCol = querySelector('#typeCol') as TableCellElement;
+final _memoryCol = querySelector('#memoryCol') as TableCellElement;
+final _spanSort = querySelectorAll('[id\$=\'Sort\']') as List<SpanElement>;
 
 /// The latest displayed result.
 DumpResults oldResult;

@@ -77,16 +77,17 @@ class HandleDumpParser {
     for (var row in list.skip(1)) {
       var count = row[1];
       var memory = row[3];
-      if (count is! int || memory is! int) {
-        return null;
+      if (count is int && memory is int) {
+        totalMemory += memory;
+        totalHandles += count;
+        owners.add(
+            Owner(row[0] as String, row[2] as String, memory)..count = count);
       }
-      totalMemory += memory;
-      totalHandles += count;
-      owners.add(Owner(row[0], row[2], memory)..count = count);
+      return null;
     }
     return DumpResults._(
         Map<String, Owner>.fromIterable(owners,
-            key: (k) => k.owner, value: (v) => v),
+            key: (k) => k.owner as String, value: (v) => v as Owner),
         totalMemory,
         totalHandles,
         file);
@@ -221,7 +222,7 @@ class Owner {
     var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k2].compareTo(types[k1]));
     var sortedMap = Map<String, int>.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => types[k]);
+        key: (k) => k as String, value: (k) => types[k]);
     return sortedMap.keys.first;
   }
 
@@ -230,7 +231,7 @@ class Owner {
     var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k1].compareTo(types[k2]));
     var sortedMap = Map<String, int>.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => types[k]);
+        key: (k) => k as String, value: (k) => types[k]);
     var type = sortedMap.keys.first;
 
     var ownerBuffer = StringBuffer(owner);

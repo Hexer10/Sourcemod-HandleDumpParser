@@ -27,7 +27,8 @@ Future<void> initDB() async {
   // Open database
   _database = await idb.open('dumps',
       version: 1,
-      onUpgradeNeeded: (event) => _createObjectStore(event.target.result));
+      onUpgradeNeeded: (event) =>
+          _createObjectStore(event.target.result as Database));
 
   // Get the dumps in the history.
   var transaction = _database.transaction('dumps', 'readonly');
@@ -87,7 +88,7 @@ Future<void> updateTable([_]) async {
   var transaction = _database.transaction('dumps', 'readonly');
   var store = transaction.objectStore('dumps');
   var result = await store.getObject(id);
-  var dumpResults = HandleDumpParser.parse(result['data']);
+  var dumpResults = HandleDumpParser.parse(result['data'] as String);
 
   if (dumpResults == null) {
     Snackbar.show(SnackbarParams(
@@ -99,7 +100,7 @@ Future<void> updateTable([_]) async {
     transaction = _database.transaction('dumps', 'readonly');
     store = transaction.objectStore('dumps');
     result = await store.getObject(compareId);
-    var dumpResults2 = HandleDumpParser.parse(result['data']);
+    var dumpResults2 = HandleDumpParser.parse(result['data'] as String);
 
     if (dumpResults2 == null) {
       Snackbar.show(SnackbarParams(
@@ -141,7 +142,7 @@ void sortTable(Sorter sorter) {
     var sortedKeys = types.keys.toList(growable: false)
       ..sort((k1, k2) => types[k2].compareTo(types[k1]));
     var sortedMap = Map<String, int>.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => types[k]);
+        key: (k) => k as String, value: (k) => types[k]);
     var type = sortedMap.keys.first;
 
     tableBody.appendHtml(
@@ -153,7 +154,7 @@ void sortTable(Sorter sorter) {
 
 /// Creates the history list.
 void createHistory(Request request) {
-  List<dynamic> result = request.result;
+  var result = request.result as List<dynamic>;
   _nextIndex = result.length + 1;
   var min = result.length - 10;
   if (min < 0) {
@@ -204,7 +205,7 @@ String _getTooltip(Owner owner) {
   var sortedKeys = types.keys.toList(growable: false)
     ..sort((k1, k2) => types[k2].compareTo(types[k1]));
   var sortedMap = Map<String, int>.fromIterable(sortedKeys,
-      key: (k) => k, value: (k) => types[k]);
+      key: (k) => k as String, value: (k) => types[k]);
 
   sortedMap.forEach((k, v) {
     buffer.write('$k - $v (${owner.ownerMemory[k]} bytes)<br>');

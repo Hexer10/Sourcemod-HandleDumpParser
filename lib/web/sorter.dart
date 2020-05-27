@@ -30,11 +30,11 @@ void _handleEvent(MouseEvent event) {
     return;
   }
 
-  TableCellElement target = event.currentTarget;
+  var target = event.currentTarget as TableCellElement;
   var newKey = _stringToKey(target.id);
   assert(newKey != null);
 
-  SpanElement span = target.children.first;
+  var span = target.children.first as SpanElement;
   if (newKey == _key) {
     if (_order == SortOrder.ascending) {
       _order = SortOrder.descending;
