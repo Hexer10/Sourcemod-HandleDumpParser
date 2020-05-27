@@ -22,7 +22,7 @@ enum SortKey {
   memory,
 }
 
-/// Sorter singleton.
+/// Sorter.
 class Sorter {
   /// Sorting order
   final SortOrder order;

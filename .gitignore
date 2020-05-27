@@ -11,5 +11,6 @@ build/
 doc/api/
 
 # IDEA Files
-HandleDumpParser.iml
-.idea/
+.idea/workspace.xml
+.idea/$CACHE_FILE$
+.idea/libraries

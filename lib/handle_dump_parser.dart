@@ -129,6 +129,8 @@ class DumpResults {
                 .compareTo(b.getMostUsedType().toLowerCase()));
         case SortKey.memory:
           return values..sort((a, b) => b.memory.compareTo(a.memory));
+        default:
+          return null;
       }
     } else {
       switch (sorter.key) {
@@ -146,10 +148,10 @@ class DumpResults {
                 .compareTo(a.getMostUsedType().toLowerCase()));
         case SortKey.memory:
           return values..sort((a, b) => a.memory.compareTo(b.memory));
+        default:
+          return null;
       }
     }
-    // Fix lint.
-    return null;
   }
 
   /// A Map containing all the owners names linked to the [Owner] objects.
