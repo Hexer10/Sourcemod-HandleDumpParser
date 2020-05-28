@@ -63,7 +63,6 @@ Future<void> updateTable([_]) async {
   hash = window.location.hash.substring(1);
   var id = int.tryParse(hash);
 
-
   // Try match compare
   int compareId;
   if (id == null) {
@@ -81,7 +80,7 @@ Future<void> updateTable([_]) async {
       window.location.hash = '#';
       return;
     }
-    if(id == compareId) {
+    if (id == compareId) {
       window.location.hash = '#$id';
       return;
     }
@@ -140,6 +139,7 @@ Future<void> updateTable([_]) async {
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
 }
 
+/// Append the rows to the datatable
 void appendRows(Owner result) {
   if (result.changed) {
     tableBody.appendHtml(

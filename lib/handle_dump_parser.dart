@@ -167,15 +167,19 @@ class DumpResults {
     var owners1 = dump1.owners;
     var owners2 = dump2.owners;
     owners1.forEach((name, owner) {
-      owner._changed = !owners2.containsValue(owner);
-      if (owner._changed) {
-        owner._otherOwner = owners2[name];
+      if (owners2[name] == null) {
+        owner._added = true;
         return;
       }
-      owner._added = !owners2.containsKey(name);
+      owner._changed = owners2[name] != owner;
+      if (owner._changed) {
+        owner._otherOwner = owners2[name];
+        assert(owner._otherOwner != null, 'Other Owner must be not null');
+        return;
+      }
     });
     owners2.forEach((name, owner) {
-      if (!owners1.containsKey(name)) {
+      if (owners1[name] == null) {
         owner._removed = true;
         owners1[name] = owner;
       }
