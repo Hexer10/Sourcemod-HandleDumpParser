@@ -62,6 +62,9 @@ Future<void> updateTable([_]) async {
   }
   hash = window.location.hash.substring(1);
   var id = int.tryParse(hash);
+
+
+  // Try match compare
   int compareId;
   if (id == null) {
     var match = _compareRegex.firstMatch(hash);
@@ -73,14 +76,18 @@ Future<void> updateTable([_]) async {
     compareId = int.tryParse(match.group(2));
     if (id == null ||
         compareId == null ||
-        compareId < 0 ||
+        compareId <= 0 ||
         compareId > _nextIndex - 1) {
       window.location.hash = '#';
       return;
     }
+    if(id == compareId) {
+      window.location.hash = '#$id';
+      return;
+    }
   }
 
-  if (id < 0 || id > _nextIndex - 1) {
+  if (id <= 0 || id > _nextIndex - 1) {
     window.location.hash = '#';
     return;
   }
@@ -88,6 +95,8 @@ Future<void> updateTable([_]) async {
   var transaction = _database.transaction('dumps', 'readonly');
   var store = transaction.objectStore('dumps');
   var result = await store.getObject(id);
+
+  assert(result != null);
   var dumpResults = HandleDumpParser.parse(result['data'] as String);
 
   if (dumpResults == null) {
@@ -100,6 +109,8 @@ Future<void> updateTable([_]) async {
     transaction = _database.transaction('dumps', 'readonly');
     store = transaction.objectStore('dumps');
     result = await store.getObject(compareId);
+
+    assert(result != null);
     var dumpResults2 = HandleDumpParser.parse(result['data'] as String);
 
     if (dumpResults2 == null) {
@@ -113,42 +124,55 @@ Future<void> updateTable([_]) async {
     dumpResults = DumpResults.compare(dumpResults, dumpResults2);
   }
 
-  oldResult = dumpResults;
+  oldResult = currentResult;
+  currentResult = dumpResults;
+
+  oldResultId = currentResultId;
+  currentResultId = id;
+
+  csvButton.disabled = false;
+  compareButton.disabled = oldResult == null;
+
   var results = dumpResults.sort();
   resetSort();
   tableBody.innerHtml = '';
-  for (var result in results) {
+  results.forEach(appendRows);
+  (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
+}
+
+void appendRows(Owner result) {
+  if (result.changed) {
     tableBody.appendHtml(
-        '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory} bytes</th></tr>',
+        '<tr class="col-sm-12 table-warning">'
+        '<th>${result.owner}</th><th>${result.count} (${result.otherOwner.count})</th>'
+        '<th>'
+        '<span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span>'
+        '<span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result.otherOwner)}"> (${result.otherOwner.getMostUsedType()})</span>'
+        '</th>'
+        '<th>${result.memory} (${result.otherOwner.memory}) bytes</th>'
+        '</tr>',
+        validator: _htmlValidator);
+  } else if (result.added) {
+    tableBody.appendHtml(
+        '<tr class="col-sm-12 table-success"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory} bytes</th></tr>',
+        validator: _htmlValidator);
+  } else if (result.removed) {
+    tableBody.appendHtml(
+        '<tr class="col-sm-12 table-danger"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory} bytes</th></tr>',
+        validator: _htmlValidator);
+  } else {
+    tableBody.appendHtml(
+        '<tr class="col-sm-12"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">${result.getMostUsedType()}</span></th><th>${result.memory} bytes</th></tr>',
         validator: _htmlValidator);
   }
-  (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
 }
 
 /// Sort a table from a previous dumpResult.
 void sortTable(Sorter sorter) {
-  final htmlValidator = NodeValidatorBuilder.common()
-    ..allowElement('span', attributes: [
-      'data-toggle',
-      'data-html',
-      'data-placement',
-      'data-container'
-    ]);
-
-  var results = oldResult.sort(sorter);
+  var results = currentResult.sort(sorter);
   tableBody.innerHtml = '';
-  for (var result in results) {
-    var types = result.types;
-    var sortedKeys = types.keys.toList(growable: false)
-      ..sort((k1, k2) => types[k2].compareTo(types[k1]));
-    var sortedMap = Map<String, int>.fromIterable(sortedKeys,
-        key: (k) => k as String, value: (k) => types[k]);
-    var type = sortedMap.keys.first;
+  results.forEach(appendRows);
 
-    tableBody.appendHtml(
-        '<tr class="col-sm-12${result.changed ? ' table-danger' : ''}"><th>${result.owner}</th><th>${result.count}</th><th><span data-container="table" data-placement="top" data-toggle="tooltip" data-html="true" title="${_getTooltip(result)}">$type</span></th><th>${result.memory}</th></tr>',
-        validator: htmlValidator);
-  }
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
 }
 

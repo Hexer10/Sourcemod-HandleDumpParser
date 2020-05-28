@@ -107,7 +107,11 @@ class DumpResults {
   /// Raw unparsed dump.
   final String raw;
 
-  DumpResults._(this._owners, this.totalMemory, this.handleCount, this.raw);
+  /// A Map containing all the owners names linked to the [Owner] objects.
+  Map<String, Owner> get owners => _owners;
+
+  const DumpResults._(
+      this._owners, this.totalMemory, this.handleCount, this.raw);
 
   /// Sort the handles by [Sorter].
   List<Owner> sort([Sorter sorter]) {
@@ -154,16 +158,28 @@ class DumpResults {
     }
   }
 
-  /// A Map containing all the owners names linked to the [Owner] objects.
-  Map<String, Owner> get owners => _owners;
-
   /// Compare two DumpResults
-  factory DumpResults.compare(DumpResults dump1, DumpResults dump2) {
+  DumpResults.compare(DumpResults dump1, DumpResults dump2)
+      : _owners = dump1.owners,
+        totalMemory = dump1.totalMemory,
+        handleCount = dump1.handleCount,
+        raw = dump1.raw {
     var owners1 = dump1.owners;
     var owners2 = dump2.owners;
-    owners1.forEach((k, v) => v._changed = !owners2.containsValue(v));
-    return DumpResults._(
-        owners1, dump1.totalMemory, dump1.handleCount, dump1.raw);
+    owners1.forEach((name, owner) {
+      owner._changed = !owners2.containsValue(owner);
+      if (owner._changed) {
+        owner._otherOwner = owners2[name];
+        return;
+      }
+      owner._added = !owners2.containsKey(name);
+    });
+    owners2.forEach((name, owner) {
+      if (!owners1.containsKey(name)) {
+        owner._removed = true;
+        owners1[name] = owner;
+      }
+    });
   }
 
   /// Convert this object to a csv format string.
@@ -197,9 +213,29 @@ class Owner {
 
   bool _changed = false;
 
-  /// Returns true if the results are changed.
+  bool _added = false;
+
+  bool _removed = false;
+
+  Owner _otherOwner;
+
+  /// True if the results are changed.
   /// See [DumpResults.compare]
   bool get changed => _changed;
+
+  /// True if this item was added in the current result.
+  /// See [DumpResults.compare]
+  bool get added => _added;
+
+  /// True if this item was removed in the current result.
+  /// See [DumpResults.compare]
+  bool get removed => _removed;
+
+  /// Returns the owner this was compared to.
+  /// Throws if [changed] is false
+  Owner get otherOwner => changed
+      ? _otherOwner
+      : throw UnsupportedError('This Owner did not change!');
 
   /// Initialize Owner.
   Owner(this.owner, String type, this.memory) {

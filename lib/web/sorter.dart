@@ -26,7 +26,7 @@ void resetSort() {
 }
 
 void _handleEvent(MouseEvent event) {
-  if (oldResult == null) {
+  if (currentResult == null) {
     return;
   }
 

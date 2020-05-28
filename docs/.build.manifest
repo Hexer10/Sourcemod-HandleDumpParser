@@ -1,14 +1,9 @@
+.dart_tool/package_config.json
 .packages
 index.html
 main.dart.js
 manifest.json
-packages/$sdk/_internal/ddc_sdk.sum
 packages/$sdk/_internal/strong.sum
-packages/$sdk/dev_compiler/amd/dart_sdk.js
-packages/$sdk/dev_compiler/amd/require.js
-packages/$sdk/dev_compiler/common/dart_sdk.js
-packages/$sdk/dev_compiler/common/run.js
-packages/$sdk/dev_compiler/es6/dart_sdk.js
 packages/$sdk/dev_compiler/kernel/amd/dart_sdk.js
 packages/$sdk/dev_compiler/kernel/amd/require.js
 packages/$sdk/dev_compiler/kernel/common/dart_sdk.js
@@ -28,7 +23,6 @@ packages/effective_dart/analysis_options.1.0.0.yaml
 packages/effective_dart/analysis_options.1.1.0.yaml
 packages/effective_dart/analysis_options.1.2.0.yaml
 packages/effective_dart/analysis_options.yaml
-packages/package_resolver/src/test_package_config
 packages/pedantic/analysis_options.1.0.0.yaml
 packages/pedantic/analysis_options.1.1.0.yaml
 packages/pedantic/analysis_options.1.2.0.yaml

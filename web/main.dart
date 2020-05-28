@@ -11,15 +11,15 @@ Future<void> main() async {
   initSort();
   dumpForm.onSubmit.listen(onFormSubmit);
   fileInput.onChange.listen(onFileSubmit);
-  csvButton.onClick.listen((data) {
-    if (oldResult == null) {
+  csvButton.onClick.listen((event) {
+    if (currentResult == null) {
       Snackbar.show(SnackbarParams(
           text: 'No dump is selected.',
           pos: 'top-right',
           backgroundColor: '#cc3300'));
       return;
     }
-    var csv = oldResult.toCsv();
+    var csv = currentResult.toCsv();
     var result = copyToClipboard(csv);
     if (result) {
       Snackbar.show(SnackbarParams(
@@ -32,8 +32,17 @@ Future<void> main() async {
               'Failed to copy the text, check the dev console for the output.',
           pos: 'top-right',
           backgroundColor: '#cc3300'));
-      print(result);
     }
+  });
+  compareButton.onClick.listen((event) {
+    if (currentResult == null || oldResult == null) {
+      Snackbar.show(SnackbarParams(
+          text: 'Compare failed',
+          pos: 'top-right',
+          backgroundColor: '#cc3300'));
+      return;
+    }
+    window.location.hash = '#$currentResultId-$oldResultId';
   });
   clearButton.onClick.listen((data) {
     clearHistory();
@@ -57,7 +66,7 @@ void onFormSubmit(Event event) {
 }
 
 void onFileSubmit(_) {
-  List fileInput = (querySelector('#files') as InputElement).files;
+  var fileInput = (querySelector('#files') as InputElement).files;
 
   if (fileInput.isEmpty) {
     return;
@@ -79,7 +88,7 @@ void onFileSubmit(_) {
     addData(dumpResults);
   });
 
-  reader.readAsText(fileInput[0] as Blob, 'UTF-8');
+  reader.readAsText(fileInput[0], 'UTF-8');
 }
 
 /*

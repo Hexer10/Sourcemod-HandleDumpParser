@@ -2,56 +2,59 @@ import 'dart:html';
 
 import '../handle_dump_parser.dart';
 
-final _dumpTable = querySelector('#dumpTable') as TableElement;
-final _tableBody = _dumpTable.tBodies.first;
-final _dumpForm = querySelector('#dumpForm') as FormElement;
-final _fileInput = querySelector('#files') as InputElement;
-final _historyList = querySelector('#history') as UListElement;
-final _csvButton = querySelector('#csvButton') as ButtonElement;
-final _clearButton = querySelector('#clearButton') as ButtonElement;
-
-final _ownerCol = querySelector('#ownerCol') as TableCellElement;
-
-final _handleCol = querySelector('#handleCol') as TableCellElement;
-final _typeCol = querySelector('#typeCol') as TableCellElement;
-final _memoryCol = querySelector('#memoryCol') as TableCellElement;
-final _spanSort = querySelectorAll('[id\$=\'Sort\']') as List<SpanElement>;
-
-/// The latest displayed result.
-DumpResults oldResult;
-
 /// Dump table element.
-TableElement get dumpTable => _dumpTable;
+final TableElement _dumpTable = querySelector('#dumpTable') as TableElement;
 
 /// Table body(tr) element.
-TableSectionElement get tableBody => _tableBody;
+final TableSectionElement tableBody = _dumpTable.tBodies.first;
 
 /// The input form element.
-FormElement get dumpForm => _dumpForm;
+final FormElement dumpForm = querySelector('#dumpForm') as FormElement;
 
 /// The input file element.
-InputElement get fileInput => _fileInput;
+final InputElement fileInput = querySelector('#files') as InputElement;
 
 /// History list element.
-UListElement get historyList => _historyList;
+final UListElement historyList = querySelector('#history') as UListElement;
 
 /// Convert to CSV button element.
-ButtonElement get csvButton => _csvButton;
+final ButtonElement csvButton = querySelector('#csvButton') as ButtonElement;
+
+/// Compare button element.
+final ButtonElement compareButton =
+    querySelector('#compareButton') as ButtonElement;
 
 /// Clear history button element.
-ButtonElement get clearButton => _clearButton;
+final ButtonElement clearButton =
+    querySelector('#clearButton') as ButtonElement;
 
 /// Owner body column.
-TableCellElement get ownerCol => _ownerCol;
+final TableCellElement ownerCol =
+    querySelector('#ownerCol') as TableCellElement;
 
 /// Handle count column.
-TableCellElement get handleCol => _handleCol;
+final TableCellElement handleCol =
+    querySelector('#handleCol') as TableCellElement;
 
 /// Most used handle type column.
-TableCellElement get typeCol => _typeCol;
+final TableCellElement typeCol = querySelector('#typeCol') as TableCellElement;
 
 /// Memory used column.
-TableCellElement get memoryCol => _memoryCol;
+final TableCellElement memoryCol =
+    querySelector('#memoryCol') as TableCellElement;
 
 /// Sorting indicators.
-List<SpanElement> get spanSort => _spanSort;
+final List<SpanElement> spanSort =
+    querySelectorAll('[id\$=\'Sort\']').toList().cast<SpanElement>();
+
+/// The latest displayed result.
+DumpResults currentResult;
+
+/// Result displayed before [currentResult].
+DumpResults oldResult;
+
+/// The latest displayed result id.
+int currentResultId;
+
+/// Result id set before [currentResultId].
+int oldResultId;
