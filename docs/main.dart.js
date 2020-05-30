@@ -2238,7 +2238,8 @@ t=1
 break}l=F.ei($.C[n].d)
 if(l==null){self.Snackbar.show({text:"Invalid string!",pos:"top-right",backgroundColor:"#cc3300"})
 t=1
-break}if(m!=null){if(n>=$.C.length){r=H.r($.C,n)
+break}if(m!=null){n=m-1
+if(n<0||n>=$.C.length){r=H.r($.C,n)
 t=1
 break}k=F.ei($.C[n].d)
 if(k==null){self.Snackbar.show({text:"Invalid string!",pos:"top-right",backgroundColor:"#cc3300"})

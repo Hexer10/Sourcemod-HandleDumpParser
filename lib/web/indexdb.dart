@@ -111,7 +111,7 @@ Future<void> updateTable([_]) async {
   }
 
   if (compareId != null) {
-    result = _historyList[id - 1];
+    result = _historyList[compareId - 1];
 
     assert(result != null, 'Null result with id: $id (compare)');
     var dumpResults2 = HandleDumpParser.parse(result.data);
