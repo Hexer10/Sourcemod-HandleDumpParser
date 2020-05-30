@@ -27,6 +27,7 @@ Future<void> main() async {
           pos: 'top-right',
           backgroundColor: '#5cb85c'));
     } else {
+      window.console.log(csv);
       Snackbar.show(SnackbarParams(
           text:
               'Failed to copy the text, check the dev console for the output.',
@@ -44,9 +45,9 @@ Future<void> main() async {
     }
     window.location.hash = '#$currentResultId-$oldResultId';
   });
-  clearButton.onClick.listen((data) {
-    clearHistory();
-  });
+  clearButton.onClick.listen((event) => clearHistory());
+  leftArrow.onClick.listen((event) => updateHistoryPage(previous: true));
+  rightArrow.onClick.listen((event) => updateHistoryPage());
 }
 
 void onFormSubmit(Event event) {

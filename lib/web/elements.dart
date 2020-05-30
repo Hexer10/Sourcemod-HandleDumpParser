@@ -15,7 +15,7 @@ final FormElement dumpForm = querySelector('#dumpForm') as FormElement;
 final InputElement fileInput = querySelector('#files') as InputElement;
 
 /// History list element.
-final UListElement historyList = querySelector('#history') as UListElement;
+final UListElement historyListElement = querySelector('#history') as UListElement;
 
 /// Convert to CSV button element.
 final ButtonElement csvButton = querySelector('#csvButton') as ButtonElement;
@@ -27,6 +27,14 @@ final ButtonElement compareButton =
 /// Clear history button element.
 final ButtonElement clearButton =
     querySelector('#clearButton') as ButtonElement;
+
+/// Button to go the the previous history page.
+final ButtonElement leftArrow =
+    querySelector('#leftArrowButton') as ButtonElement;
+
+/// Button to go the the next history page.
+final ButtonElement rightArrow =
+    querySelector('#rightArrowButton') as ButtonElement;
 
 /// Owner body column.
 final TableCellElement ownerCol =

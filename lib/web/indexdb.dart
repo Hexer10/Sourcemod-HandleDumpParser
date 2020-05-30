@@ -1,6 +1,8 @@
 import 'dart:html';
 import 'dart:indexed_db';
 
+import 'package:HandleDumpParser/web/dump_entry.dart';
+
 import '../handle_dump_parser.dart';
 import '../sorting.dart';
 import 'elements.dart';
@@ -8,7 +10,7 @@ import 'sorter.dart';
 import 'wrapper.dart';
 
 Database _database;
-int _nextIndex = 1;
+
 final _htmlValidator = NodeValidatorBuilder.common()
   ..allowElement('span', attributes: [
     'data-toggle',
@@ -16,6 +18,8 @@ final _htmlValidator = NodeValidatorBuilder.common()
     'data-placement',
     'data-container'
   ]);
+
+final _historyList = <HistoryEntry>[];
 
 /// Initialize db.
 Future<void> initDB() async {
@@ -36,9 +40,14 @@ Future<void> initDB() async {
   var request = store.getAll(null);
 
   request.onSuccess.listen((event) {
-    createHistory(request);
+    _historyList.addAll((request.result as List).toHistoryList());
+    createHistory();
     updateTable();
     window.onHashChange.listen(updateTable);
+  });
+
+  request.onError.listen((event) {
+    window.console.error('Failed to retrieve history\n$event');
   });
 }
 
@@ -76,7 +85,7 @@ Future<void> updateTable([_]) async {
     if (id == null ||
         compareId == null ||
         compareId <= 0 ||
-        compareId > _nextIndex - 1) {
+        compareId > _historyList.length) {
       window.location.hash = '#';
       return;
     }
@@ -86,17 +95,15 @@ Future<void> updateTable([_]) async {
     }
   }
 
-  if (id <= 0 || id > _nextIndex - 1) {
+  if (id <= 0 || id > _historyList.length) {
     window.location.hash = '#';
     return;
   }
 
-  var transaction = _database.transaction('dumps', 'readonly');
-  var store = transaction.objectStore('dumps');
-  var result = await store.getObject(id);
+  var result = _historyList[id - 1];
 
-  assert(result != null);
-  var dumpResults = HandleDumpParser.parse(result['data'] as String);
+  assert(result != null, 'Null result with id: $id');
+  var dumpResults = HandleDumpParser.parse(result.data);
 
   if (dumpResults == null) {
     Snackbar.show(SnackbarParams(
@@ -105,12 +112,10 @@ Future<void> updateTable([_]) async {
   }
 
   if (compareId != null) {
-    transaction = _database.transaction('dumps', 'readonly');
-    store = transaction.objectStore('dumps');
-    result = await store.getObject(compareId);
+    result = _historyList[id - 1];
 
-    assert(result != null);
-    var dumpResults2 = HandleDumpParser.parse(result['data'] as String);
+    assert(result != null, 'Null result with id: $id (compare)');
+    var dumpResults2 = HandleDumpParser.parse(result.data);
 
     if (dumpResults2 == null) {
       Snackbar.show(SnackbarParams(
@@ -176,19 +181,37 @@ void sortTable(Sorter sorter) {
   (jQuery('[data-toggle="tooltip"]') as TooltipElement).tooltip();
 }
 
+var _currentPage = 1;
+
 /// Creates the history list.
-void createHistory(Request request) {
-  var result = request.result as List<dynamic>;
-  _nextIndex = result.length + 1;
-  var min = result.length - 10;
-  if (min < 0) {
-    min = 0;
+void createHistory() {
+  clearButton.disabled = _historyList.isEmpty;
+  for (var e in _historyList
+      .sublist((_historyList.length - 10).clamp(0, double.maxFinite).toInt())) {
+    historyListElement.prependHtml(
+        '<li><small><a href="#${e.index + 1}">Dump #${e.index + 1} <br>Memory: ${e.memory} <br>Handles: ${e.handles}</a></small></li>');
   }
-  for (var i = result.length - 1; i >= min; i--) {
-    var e = result[i];
-    historyList.appendHtml(
-        '<li><small><a href="#${i + 1}">Dump #${i + 1} <br>Memory: ${e['memory']} <br>Handles: ${e['handles']}</a></small></li>');
+  rightArrow.disabled = _historyList.length < 10;
+}
+
+/// Updates the history list, if [previous] is true it goes back otherwise to
+/// the next page. If [page] is not null the current page is set to that.
+void updateHistoryPage({final bool previous = false, final int page}) {
+  historyListElement.text = '';
+  _currentPage += previous ? -1 : 1;
+  if (page != null) {
+    _currentPage = page;
   }
+  for (var e in _historyList
+      .sublist((_historyList.length - (10 * _currentPage))
+          .clamp(0, double.maxFinite)
+          .toInt())
+      .take(10)) {
+    historyListElement.prependHtml(
+        '<li><small><a href="#${e.index + 1}">Dump #${e.index + 1} <br>Memory: ${e.memory} <br>Handles: ${e.handles}</a></small></li>');
+  }
+  leftArrow.disabled = _currentPage == 1;
+  rightArrow.disabled = _historyList.length < (10 * _currentPage);
 }
 
 /// Add a new dump into the database.
@@ -200,26 +223,27 @@ Future<void> addData(DumpResults dump) async {
     'memory': dump.totalMemory,
     'handles': dump.handleCount
   });
-  var children = historyList.children;
+  updateHistoryPage(page: 1);
+  _historyList.add(HistoryEntry(
+      _historyList.length, dump.totalMemory, dump.handleCount, dump.raw));
+  clearButton.disabled = false;
+  var children = historyListElement.children;
   if (children.length >= 10) {
     children.removeLast();
   }
-  children.insert(
-      0,
-      Element.html(
-          '<li><small><a href="#$_nextIndex">Dump #$_nextIndex <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>'));
-  window.location.hash = '#$_nextIndex';
-  _nextIndex += 1;
+  historyListElement.prependHtml(
+      '<li><small><a href="#${_historyList.length}">Dump #${_historyList.length} <br>Memory: ${dump.totalMemory} <br>Handles: ${dump.handleCount}</a></small></li>');
+  window.location.hash = '#${_historyList.length}';
 }
 
 /// Clears all the history data.
 Future<void> clearHistory() async {
   var transaction = _database.transaction('dumps', 'readwrite');
   await transaction.objectStore('dumps').clear();
-  historyList.children.clear();
+  historyListElement.children.clear();
   tableBody.innerHtml = '';
   window.location.hash = '#';
-  _nextIndex = 1;
+  _historyList.clear();
 }
 
 /// Returns the owners' tooltip string.
@@ -236,4 +260,23 @@ String _getTooltip(Owner owner) {
   });
   buffer.write('</small>');
   return buffer.toString();
+}
+
+extension on Element {
+  void prependHtml(String text,
+      {NodeValidator validator, NodeTreeSanitizer treeSanitizer}) {
+    insertAdjacentHtml('afterbegin', text,
+        validator: validator, treeSanitizer: treeSanitizer);
+  }
+}
+
+extension on List {
+  List<HistoryEntry> toHistoryList() {
+    var index = 0;
+    return <HistoryEntry>[
+      for (var e in this)
+        HistoryEntry(index++, e['memory'] as int, e['handles'] as int,
+            e['data'] as String)
+    ];
+  }
 }
