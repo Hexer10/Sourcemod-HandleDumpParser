@@ -1,10 +1,9 @@
 import 'dart:html';
 import 'dart:indexed_db';
 
-import 'package:HandleDumpParser/web/dump_entry.dart';
-
 import '../handle_dump_parser.dart';
 import '../sorting.dart';
+import 'dump_entry.dart';
 import 'elements.dart';
 import 'sorter.dart';
 import 'wrapper.dart';

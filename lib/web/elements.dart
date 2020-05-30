@@ -15,7 +15,8 @@ final FormElement dumpForm = querySelector('#dumpForm') as FormElement;
 final InputElement fileInput = querySelector('#files') as InputElement;
 
 /// History list element.
-final UListElement historyListElement = querySelector('#history') as UListElement;
+final UListElement historyListElement =
+    querySelector('#history') as UListElement;
 
 /// Convert to CSV button element.
 final ButtonElement csvButton = querySelector('#csvButton') as ButtonElement;
