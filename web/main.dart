@@ -1,12 +1,16 @@
 import 'dart:html';
+import 'dart:js';
+import 'dart:js_util';
 
 import 'package:HandleDumpParser/handle_dump_parser.dart';
 import 'package:HandleDumpParser/web/elements.dart';
 import 'package:HandleDumpParser/web/indexdb.dart';
 import 'package:HandleDumpParser/web/sorter.dart';
+import 'package:HandleDumpParser/web/theme_loader.dart';
 import 'package:HandleDumpParser/web/wrapper.dart';
 
 Future<void> main() async {
+//  loadTheme();
   await initDB();
   initSort();
   dumpForm.onSubmit.listen(onFormSubmit);
@@ -45,9 +49,14 @@ Future<void> main() async {
     }
     window.location.hash = '#$currentResultId-$oldResultId';
   });
+  textArea.onFocus.listen((event) {
+    textArea.setAttribute('style', themesCSS[currentTheme]);
+  });
   clearButton.onClick.listen((event) => clearHistory());
   leftArrow.onClick.listen((event) => updateHistoryPage(previous: true));
   rightArrow.onClick.listen((event) => updateHistoryPage());
+  setProperty(window, 'loadTheme', allowInterop(loadTheme));
+
 }
 
 void onFormSubmit(Event event) {

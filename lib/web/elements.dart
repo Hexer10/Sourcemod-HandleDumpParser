@@ -2,6 +2,15 @@ import 'dart:html';
 
 import '../handle_dump_parser.dart';
 
+/// Textarea input
+final TextAreaElement textArea = querySelector('textarea') as TextAreaElement;
+
+/// File label
+final LabelElement fileslabel = querySelector('#filesLabel') as LabelElement;
+
+/// The theme link element
+final LinkElement themeElement = querySelector('#style') as LinkElement;
+
 /// Dump table element.
 final TableElement _dumpTable = querySelector('#dumpTable') as TableElement;
 

@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link id="style" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <script async>
+        const themes = {
+            'light':
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css',
+            'dark':
+                'https://stackpath.bootstrapcdn.com/bootswatch/4.5.0/darkly/bootstrap.min.css'
+        };
+        const themesCSS = {'dark': 'border: 1px solid #006737;color: #fff;background-color: #222;'};
+        let theme = localStorage.getItem("theme");
+        if (theme === null) {
+            localStorage.setItem("theme", "light");
+            theme = "light";
+        }
+        if (themes[theme] === null) {
+            console.error(`Invalid theme: ${theme}, falling back to light`);
+        }
+        document.querySelector('#style').setAttribute('href', themes[theme]);
+        if (themesCSS[theme] !== null) {
+            window.addEventListener('DOMContentLoaded', () => {
+                const textarea = document.querySelector('textarea');
+                textarea.style = themesCSS[theme];
+                document.querySelector('#filesLabel').style = themesCSS[theme];
+            });
+        }
+    </script>
     <link rel="manifest" href="manifest.json"/>
     <meta name="theme-color" content="#ffffff"/>
     <title>Handle Dump parser</title>
@@ -8,10 +34,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-
-    <!-- Bootstrap CSS -->
-    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" rel="stylesheet">
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
     <link href="https://unpkg.com/node-snackbar@0.1.15/dist/snackbar.min.css" rel="stylesheet">
@@ -27,6 +49,16 @@
 
         .tooltip-inner {
             text-align: left !important;
+        }
+
+        .dark-mode {
+            border: 1px solid #006737;
+            color: #fff;
+            background-color: #222;
+        }
+
+        .dark-mode::selection {
+            background-color: #222;
         }
     </style>
     <!--suppress HtmlUnknownTarget -->
@@ -74,7 +106,7 @@
                 <div class="custom-file">
                     <input class="custom-file-input" id="files" name="files[]" type="file"/>
                     <output id="list"></output>
-                    <label class="custom-file-label" for="files">Choose file...</label>
+                    <label id="filesLabel" class="custom-file-label" for="files">Choose file...</label>
                 </div>
                 <button class="btn btn-primary" type="submit">Submit</button>
                 <button class="btn btn-primary" type="button" id="csvButton" disabled>Convert To CSV</button>
