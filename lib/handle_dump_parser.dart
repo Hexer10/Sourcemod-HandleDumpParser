@@ -36,6 +36,10 @@ class HandleDumpParser {
 
       var memory = int.tryParse(line.substring(53).trim());
       if (memory == null) {
+        // SM 1.11+ compat
+        memory = int.tryParse(line.substring(53, 64).trim());
+      }
+      if (memory == null) {
         return null;
       }
       if (memory <= 0) {

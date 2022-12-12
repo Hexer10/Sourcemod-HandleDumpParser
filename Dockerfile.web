@@ -1,0 +1,18 @@
+# Specify the Dart SDK base image version using dart:<version> (ex: dart:2.12)
+FROM dart:stable AS build
+
+RUN mkdir /pub-cache
+
+ENV PUB_CACHE=/pub-cache \
+    PATH="${PATH}:/pub-cache/bin"
+
+RUN dart pub global activate webdev && \
+    dart pub global activate stagehand
+
+EXPOSE 8080
+
+ADD entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
