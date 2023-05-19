@@ -14,6 +14,7 @@ void main(List<String> arguments) {
 
   if (argResults['help'] as bool) {
     print(parser.usage);
+    return;
   } else if (path == null) {
     handleError('Missing required argument: path');
   }
@@ -26,12 +27,16 @@ void main(List<String> arguments) {
       'Owner                       Type                            Memory\n',
       mode: FileMode.write);
 
-  var dump = File('dump_parsed.txt').openWrite(mode: FileMode.writeOnlyAppend);
-
   var dumpResults = HandleDumpParser.parse(File(path).readAsStringSync());
 
-  dumpResults.sort().forEach(dump.writeln);
-  dump.close();
+  if (dumpResults != null)
+  {
+    var dump = File('dump_parsed.txt').openWrite(mode: FileMode.writeOnlyAppend);
+    dumpResults.sort().forEach(dump.writeln);
+    dump.close();
+  } else {
+    print("Invalid input");
+  }
 }
 
 void handleError(String msg) {
