@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link id="style" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <script async>
+        const themes = {
+            'light':
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css',
+            'dark':
+                'https://stackpath.bootstrapcdn.com/bootswatch/4.5.0/darkly/bootstrap.min.css'
+        };
+        const themesCSS = {'dark': 'border: 1px solid #006737;color: #fff;background-color: #222;'};
+        let theme = localStorage.getItem("theme");
+        if (theme === null) {
+            localStorage.setItem("theme", "light");
+            theme = "light";
+        }
+        if (themes[theme] === null) {
+            console.error(`Invalid theme: ${theme}, falling back to light`);
+        }
+        document.querySelector('#style').setAttribute('href', themes[theme]);
+        if (themesCSS[theme] !== null) {
+            window.addEventListener('DOMContentLoaded', () => {
+                const textarea = document.querySelector('textarea');
+                textarea.style = themesCSS[theme];
+                document.querySelector('#filesLabel').style = themesCSS[theme];
+            });
+        }
+    </script>
+    <link rel="manifest" href="manifest.json"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title>Handle Dump parser</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+    <link href="https://unpkg.com/node-snackbar@0.1.15/dist/snackbar.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        table {
+            font-size: 0.75em;
+        }
+
+        .tooltip-inner {
+            text-align: left !important;
+        }
+
+        .dark-mode {
+            border: 1px solid #006737;
+            color: #fff;
+            background-color: #222;
+        }
+
+        .dark-mode::selection {
+            background-color: #222;
+        }
+    </style>
+    <!--suppress HtmlUnknownTarget -->
+    <script defer src="main.dart.js"></script>
+</head>
+<body>
+<br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <ul style="margin-top: 70px" id="history">
+            </ul>
+            <!-- Left arrow -->
+            <button class="btn" type="button" id="leftArrowButton" disabled>
+                <svg class="bi bi-arrow-left-short" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                          d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+                    <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+            </button>
+
+            <button class="btn btn-outline-primary" id="clearButton" type="button" style="font-size: 0.8em"
+                    disabled>Clear
+                history
+            </button>
+            <!-- Right arrow -->
+            <button class="btn" type="button" id="rightArrowButton" disabled>
+                <svg class="bi bi-arrow-right-short" width="1em" height="1em" viewBox="0 0 16 16"
+                     fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                          d="M8.146 4.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.793 8 8.146 5.354a.5.5 0 0 1 0-.708z"/>
+                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5H11a.5.5 0 0 1 0 1H4.5A.5.5 0 0 1 4 8z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="col-9">
+            <form id="dumpForm">
+                <div class="form-group needs-validation">
+                    <label for="dumpArea">Paste your dump here making sure to copy the indentation as well or
+                        upload the dump file!</label>
+                    <textarea class="form-control" id="dumpArea" required rows="4"></textarea>
+                </div>
+                <div class="custom-file">
+                    <input class="custom-file-input" id="files" name="files[]" type="file"/>
+                    <output id="list"></output>
+                    <label id="filesLabel" class="custom-file-label" for="files">Choose file...</label>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-primary" type="button" id="csvButton" disabled>Convert To CSV</button>
+                <button class="btn btn-info" type="button" id="compareButton" disabled>Compare with previous</button>
+            </form>
+            <br>
+            <table class="table table-striped" id="dumpTable">
+                <thead>
+                <tr>
+                    <th id="ownerCol" scope="col">Owner <span id="ownerSort"></span></th>
+                    <th id="handleCol" scope="col">Handle count <span id="handleSort"></span></th>
+                    <th id="typeCol" scope="col">Most used handle type <span id="typeSort"></span></th>
+                    <th id="memoryCol" scope="col">Memory <span id="memorySort">▼</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/node-snackbar@0.1.15/dist/snackbar.min.js"></script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip({container: 'body', position: 'top'})
+    });
+</script>
+</body>
+</html>
